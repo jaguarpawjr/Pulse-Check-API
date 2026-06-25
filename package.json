@@ -1,14 +1,18 @@
 {
   "name": "amalitech-capstone",
   "version": "1.0.0",
-  "description": "",
+  "description": "A Pulse-Check API that acts as a Dead Man's Switch for monitoring critical infrastructure.",
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "monitor",
+    "watchdog",
+    "api"
+  ],
+  "author": "CritMon Servers Inc.",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
