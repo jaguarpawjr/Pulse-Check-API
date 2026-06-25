@@ -20,7 +20,8 @@ class MonitorService {
       timer: null,
       lastHeartbeat: Date.now(),
       startTime: Date.now(),
-      paused: false
+      paused: false,
+      timeRemainingAtPause: 0
     };
 
     this.monitors.set(id, monitor);
@@ -52,7 +53,7 @@ class MonitorService {
   }
 
   /**
-   * Pause a monitor (Bonus feature)
+   * Pause a monitor or resume if already paused
    */
   pause(id) {
     const monitor = this.monitors.get(id);
@@ -61,13 +62,24 @@ class MonitorService {
       throw new Error('Monitor not found');
     }
 
-    if (monitor.timer) {
-      clearTimeout(monitor.timer);
-      monitor.timer = null;
+    if (monitor.paused) {
+      // RESUME
+      monitor.paused = false;
+      monitor.status = 'ok';
+      // Adjust lastHeartbeat so that the elapsed time is (timeout - timeRemainingAtPause)
+      monitor.lastHeartbeat = Date.now() - ((monitor.timeout * 1000) - (monitor.timeRemainingAtPause * 1000));
+      this._startTimer(id);
+    } else {
+      // PAUSE
+      if (monitor.timer) {
+        clearTimeout(monitor.timer);
+        monitor.timer = null;
+      }
+      const elapsed = (Date.now() - monitor.lastHeartbeat) / 1000;
+      monitor.timeRemainingAtPause = Math.max(0, monitor.timeout - elapsed);
+      monitor.paused = true;
+      monitor.status = 'paused';
     }
-
-    monitor.paused = true;
-    monitor.status = 'paused';
 
     return this._formatResponse(monitor);
   }
@@ -103,9 +115,12 @@ class MonitorService {
       clearTimeout(monitor.timer);
     }
 
+    const elapsedMs = Date.now() - monitor.lastHeartbeat;
+    const msRemaining = Math.max(0, (monitor.timeout * 1000) - elapsedMs);
+
     monitor.timer = setTimeout(() => {
       this._triggerAlert(id);
-    }, monitor.timeout * 1000); // timeout is in seconds, convert to ms
+    }, msRemaining);
   }
 
   _triggerAlert(id) {
@@ -128,7 +143,9 @@ class MonitorService {
   _formatResponse(monitor) {
     let timeRemaining = 0;
     
-    if (!monitor.paused && monitor.status === 'ok') {
+    if (monitor.paused) {
+      timeRemaining = monitor.timeRemainingAtPause;
+    } else if (monitor.status === 'ok') {
       const elapsed = (Date.now() - monitor.lastHeartbeat) / 1000;
       timeRemaining = Math.max(0, monitor.timeout - elapsed);
     }

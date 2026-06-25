@@ -49,7 +49,8 @@ class MonitorController {
     try {
       const { id } = req.params;
       const monitor = monitorService.pause(id);
-      res.status(200).json({ message: 'Monitor paused successfully', monitor });
+      const message = monitor.status === 'paused' ? 'Monitor paused successfully' : 'Monitor resumed successfully';
+      res.status(200).json({ message, monitor });
     } catch (error) {
       if (error.message === 'Monitor not found') {
         return res.status(404).json({ error: error.message });
