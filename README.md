@@ -50,6 +50,13 @@ sequenceDiagram
 
 ## API Documentation
 
+> **Note for Postman Users:** 
+> If you are using Postman to test this API, make sure to set your request body type to **raw** and select **JSON**. 
+> You need to enter the following fields as parameters in the JSON body for the Registration endpoint:
+> - `id` (String)
+> - `timeout` (Number)
+> - `alert_email` (String)
+
 ### 1. Register a Monitor
 Create a new monitor with a specific timeout duration.
 
