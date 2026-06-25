@@ -38,6 +38,11 @@ sequenceDiagram
 ## Setup Instructions
 
 1. **Prerequisites:** Make sure you have Node.js (v14 or higher) installed.
+2. **Change directory**Make sure to change directory into the Pulse-Check-API before you start
+  ```bash
+   cd  .\Pulse-Check-API
+   ```
+
 2. **Installation:** Run the following command to install the necessary dependencies:
    ```bash
    npm install
@@ -46,6 +51,7 @@ sequenceDiagram
    ```bash
    npm start
    ```
+
    The server will run on `http://localhost:3000` by default.
 
 ## API Documentation
