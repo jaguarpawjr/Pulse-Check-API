@@ -46,6 +46,7 @@ class MonitorService {
     }
 
     monitor.paused = false;
+    // Resetting lastHeartbeat to now effectively restarts the timer from the full timeout duration
     monitor.lastHeartbeat = Date.now();
     this._startTimer(id);
 
@@ -53,7 +54,7 @@ class MonitorService {
   }
 
   /**
-   * Pause a monitor or resume if already paused
+   * Pause a monitor (Bonus feature)
    */
   pause(id) {
     const monitor = this.monitors.get(id);
@@ -62,15 +63,7 @@ class MonitorService {
       throw new Error('Monitor not found');
     }
 
-    if (monitor.paused) {
-      // RESUME
-      monitor.paused = false;
-      monitor.status = 'ok';
-      // Adjust lastHeartbeat so that the elapsed time is (timeout - timeRemainingAtPause)
-      monitor.lastHeartbeat = Date.now() - ((monitor.timeout * 1000) - (monitor.timeRemainingAtPause * 1000));
-      this._startTimer(id);
-    } else {
-      // PAUSE
+    if (!monitor.paused) {
       if (monitor.timer) {
         clearTimeout(monitor.timer);
         monitor.timer = null;
@@ -144,6 +137,7 @@ class MonitorService {
     let timeRemaining = 0;
     
     if (monitor.paused) {
+      // The time remaining when it was paused
       timeRemaining = monitor.timeRemainingAtPause;
     } else if (monitor.status === 'ok') {
       const elapsed = (Date.now() - monitor.lastHeartbeat) / 1000;
