@@ -26,11 +26,6 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'API is running' });
 });
 
-// Simple ping endpoint for connectivity check
-app.get('/ping', (req, res) => {
-  res.status(200).send('pong');
-});
-
 app.listen(PORT, () => {
   console.log(`Pulse-Check-API server listening on port ${PORT}`);
 });
